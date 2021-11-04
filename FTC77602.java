@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="FTC77602 mecanum first try", group="Linear Opmode")
+@TeleOp(name="FTC7760 Single Controller", group="Linear Opmode")
 
 public class FTC77602 extends LinearOpMode {
 
@@ -54,8 +54,10 @@ public class FTC77602 extends LinearOpMode {
         
         duckDrive.setDirection(DcMotor.Direction.FORWARD);
         duckDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        
+        duckDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                
         armDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armDrive.setTargetPosition(0);
         armDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armDrive.setDirection(DcMotor.Direction.FORWARD); 
         armDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -86,19 +88,19 @@ public class FTC77602 extends LinearOpMode {
              // This ensures all the powers maintain the same ratio, but only when
              // at least one is out of the range [-1, 1]
                 
-             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-             double leftFrontDrivePower = (y + x + rx) / denominator;
-             double leftRearDrivePower = (y - x + rx) / denominator;
-             double rightFrontDrivePower = (y - x - rx) / denominator;
-             double rightRearDrivePower = (y + x - rx) / denominator;
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double leftFrontDrivePower = (y + x + rx) / denominator;
+            double leftRearDrivePower = (y - x + rx) / denominator;
+            double rightFrontDrivePower = (y - x - rx) / denominator;
+            double rightRearDrivePower = (y + x - rx) / denominator;
                
-             leftFrontDrive.setPower(leftFrontDrivePower*SPEED_REDUCER);
-             leftRearDrive.setPower(leftRearDrivePower*SPEED_REDUCER);
-             rightFrontDrive.setPower(rightFrontDrivePower*SPEED_REDUCER);
-             rightRearDrive.setPower(rightRearDrivePower*SPEED_REDUCER);
+            leftFrontDrive.setPower(leftFrontDrivePower*SPEED_REDUCER);
+            leftRearDrive.setPower(leftRearDrivePower*SPEED_REDUCER);
+            rightFrontDrive.setPower(rightFrontDrivePower*SPEED_REDUCER);
+            rightRearDrive.setPower(rightRearDrivePower*SPEED_REDUCER);
             
         
-          if (gamepad1.a) {
+            if (gamepad1.a) {
                 duckDrive.setVelocity(-700);
                 if (gamepad1.y) {
                     duckDrive.setVelocity(-10000);

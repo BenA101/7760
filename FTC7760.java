@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="FTC7760 mecanum first try", group="Linear Opmode")
+@TeleOp(name="FTC7760 Dual Controllers", group="Linear Opmode")
 
     public class FTC7760 extends LinearOpMode {
 
@@ -53,6 +53,7 @@ import com.qualcomm.robotcore.util.Range;
         rightRearDrive.setDirection(DcMotor.Direction.REVERSE);
     
         duckDrive.setDirection(DcMotor.Direction.FORWARD);
+        duckDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);        
         duckDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         
