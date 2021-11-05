@@ -105,7 +105,7 @@ public class FTC77602 extends LinearOpMode {
                 if (gamepad1.y) {
                     duckDrive.setVelocity(-10000);
                 }
-            else {
+            } else {
                 duckDrive.setVelocity(0);
             }
         
