@@ -12,9 +12,16 @@ public class FTC7760FathomAutoBlueLeft extends FTC7760FathomAutoBase {
         
         setupOpMode();
         
-        driveForFathoms(0.0, -0.5, 0.0, -1.0 / 3.0 * 1.0);
-        driveForFathoms(0.5, 0.0, 0.0, 1.0 / 3.0 * 0.75);
-
+        double movement_speed = 0.25;
+        driveForFathoms(0.0, movement_speed, 0.0, 1.0 / 3.0 * 2.0);
+        driveForFathoms(-movement_speed, 0.0, 0.0, -1.0 / 3.0 * 0.1);
+        setArmPosition(-3000);
+        spinIntake(true, 2.0);
+        setArmPosition(-2000);
+        driveForTime(0.0, -movement_speed, 0.0, 1.25 / movement_speed);
+        driveForFathoms(movement_speed, 0.0, 0.0, 1.0 / 3.0 * 1.5);
+        driveForFathoms(0.0, movement_speed, 0.0, 1.0 / 3.0 * 0.75);
+        setArmPosition(armAutoHeight);
     }
     
     

@@ -29,7 +29,7 @@ public class FTC7760FathomAutoBase extends LinearOpMode {
     private BNO055IMU imu = null;
     private final boolean fieldCentricDriving = true;
     private final int armDrivingHeight = -200;
-    private final int armAutoHeight = -400;
+    public final int armAutoHeight = -400;
     private final boolean armRaisesAfterIntaking = false;
     private final int armMinLocation = 0;
     private final int armMaxLocation = -4000;
@@ -87,12 +87,10 @@ public class FTC7760FathomAutoBase extends LinearOpMode {
         runtime.reset();
     }
     
-    public void driveForTime(double y, double x, double rx, double time)
-    {
+    public void driveForTime(double y, double x, double rx, double time) {
         runtime.reset();
         
-        while(opModeIsActive() && runtime.seconds() < time)
-        {
+        while(opModeIsActive() && runtime.seconds() < time) {
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double leftFrontDrivePower = (y + x + rx) / denominator;
             double leftRearDrivePower = (y - x + rx) / denominator;
@@ -110,8 +108,7 @@ public class FTC7760FathomAutoBase extends LinearOpMode {
         rightRearDrive.setPower(0);
     }       
  
-    public void driveForTicks(double y, double x, double rx, double ticks)
-    {
+    public void driveForTicks(double y, double x, double rx, double ticks) {
         boolean positiveDir = ticks > 0;
         double endTicks = leftFrontDrive.getCurrentPosition() + ticks;
         
@@ -136,13 +133,11 @@ public class FTC7760FathomAutoBase extends LinearOpMode {
         rightRearDrive.setPower(0);
     }       
     
-    public void driveForMm(double y, double x, double rx, double mm)
-    {
+    public void driveForMm(double y, double x, double rx, double mm) {
         driveForTicks(y, x, rx, mm * 1.782866935);
     }
 
-    public void driveForFathoms(double y, double x, double rx, double fathoms)
-    {
+    public void driveForFathoms(double y, double x, double rx, double fathoms) {
         driveForTicks(y, x, rx, fathoms * 72 * 25.4 * 1.782866935);
     }
     

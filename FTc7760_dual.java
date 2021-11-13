@@ -96,7 +96,7 @@ public class FTc7760_dual extends LinearOpMode {
             double rx = gamepad1.right_stick_x;    //Turning
     
             // Compute field-oriented x & y values.
-
+/*
             if (fieldCentricDriving) {
                 double angle = -imu.getAngularOrientation().firstAngle;
                 telemetry.addData("Heading", "%f", angle);
@@ -105,7 +105,7 @@ public class FTc7760_dual extends LinearOpMode {
                 x = xr;
                 y = yr;
             }
-
+*/
             /* 
             Denominator is the largest motor power (absolute value) or 1
             This ensures all the powers maintain the same ratio, but only when
@@ -165,7 +165,7 @@ public class FTc7760_dual extends LinearOpMode {
 
             // Arm action!
             int armLocationDelta = 17;              //Arm increment - Increased to 17 from 15
-            if (gamepad2.left_trigger > 0.1){
+            if (gamepad2.left_trigger > 0.1) {
                 armLocationDelta /= 2;
             }
             if (gamepad2.right_bumper) {
@@ -176,9 +176,9 @@ public class FTc7760_dual extends LinearOpMode {
             
             if (armLocation > armMinLocation) {                  //Keeps the arm from moving too much
                 armLocation = armMinLocation;
-            } //else if (armLocation < armMaxLocation) { 
+            } else if (armLocation < armMaxLocation) { 
                 //armLocation = armMaxLocation;
-            //}
+            }
 
             armDrive.setTargetPosition(armLocation);
             armDrive.setPower(1.0);                 //Now with full power! Originally had only 0.5 power
@@ -190,7 +190,6 @@ public class FTc7760_dual extends LinearOpMode {
             
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
-            
         }
     }
 }
