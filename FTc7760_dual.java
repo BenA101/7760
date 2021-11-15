@@ -28,9 +28,12 @@ public class FTc7760_dual extends LinearOpMode {
     private BNO055IMU imu = null;
     private final boolean fieldCentricDriving = true;
     private final int armDrivingHeight = -200;
-    private final boolean armRaisesAfterIntaking = false;
+    private final boolean armRaisesAfterIntaking = true;
     private final int armMinLocation = 0;
     private final int armMaxLocation = -4000;
+    private final int quackSlowSpeed = -500;
+    private final int quackSuperSpeed = -10000;
+    private boolean armMinLocationIgnore = true;
     
  // left front drive 0 left rear 1 right rear 2 front right 3 rear right 4 
  //duckdrive 0 arm 2
@@ -58,6 +61,7 @@ public class FTc7760_dual extends LinearOpMode {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightRearDrive.setDirection(DcMotor.Direction.FORWARD);
     
+        duckDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         duckDrive.setDirection(DcMotor.Direction.FORWARD);
         duckDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);        
         duckDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -130,20 +134,58 @@ public class FTc7760_dual extends LinearOpMode {
         
                                                     //Quack Wheel
             if (gamepad2.a) {                       //Normal direction (For red duck wheel I think)
-                duckDrive.setVelocity(-550);
+                duckDrive.setVelocity(-quackSlowSpeed);
                 if (gamepad2.right_trigger> 0.1){
-                    duckDrive.setVelocity(-10000);  //Super fast!!
+                    duckDrive.setVelocity(-quackSuperSpeed);  //Super fast!!
                 } 
             } else if (gamepad2.y) {                //Reverse direction (For blue duck wheel I think)
-            duckDrive.setVelocity(550);
+            duckDrive.setVelocity(quackSlowSpeed);
                 if (gamepad2.right_trigger> 0.1){
-                    duckDrive.setVelocity(10000);   //Super fast!!
+                    duckDrive.setVelocity(quackSuperSpeed);   //Super fast!!
                 } 
             }
             else {
                 duckDrive.setVelocity(0);
             }
-
+            
+            //Single Button Ducks
+            int quackWheelTicks = duckDrive.getCurrentPosition();
+            int quackSuperSpeedTickValue = 400;
+            int quackStoppingPoint = 2000;
+            if (gamepad2.x || gamepad2.b) {
+                duckDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                boolean direction = true;
+                if (gamepad2.x) {
+                    direction = true;
+                } else if (gamepad2.b) {
+                    direction = false;
+                }
+                while(Math.abs(quackWheelTicks) < quackSuperSpeedTickValue) {
+                    if (gamepad2.y || gamepad2.a) {
+                        break;
+                    }
+                    if (direction) {
+                        duckDrive.setVelocity(-quackSlowSpeed);
+                    } else if (!direction) {
+                        duckDrive.setVelocity(quackSlowSpeed);
+                    }
+                    quackWheelTicks = duckDrive.getCurrentPosition();
+                }
+                while((Math.abs(quackWheelTicks) >= quackSuperSpeedTickValue) &&
+                      (Math.abs(quackWheelTicks) < quackStoppingPoint)
+                ) {
+                    if (gamepad2.y || gamepad2.a) {
+                        break;
+                    }
+                    if (direction) {
+                        duckDrive.setVelocity(-quackSuperSpeed);
+                    } else if (!direction) {
+                        duckDrive.setVelocity(quackSuperSpeed);
+                    }
+                    quackWheelTicks = duckDrive.getCurrentPosition();
+                }
+            }
+            
             // Intake fun timez...    
             if (gamepad1.right_bumper || gamepad1.left_bumper) {    //Spins intake
                 if (gamepad1.right_bumper) { // Push out
@@ -164,6 +206,17 @@ public class FTc7760_dual extends LinearOpMode {
             }
 
             // Arm action!
+            if (gamepad2.dpad_up) {
+                armMinLocationIgnore = true;
+            } else if (gamepad2.dpad_down) {
+                armMinLocationIgnore = false;
+            } else if (gamepad2.dpad_left) {
+                armDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                armDrive.setTargetPosition(0);
+                armDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                armDrive.setDirection(DcMotor.Direction.FORWARD); 
+                armDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            }
             int armLocationDelta = 17;              //Arm increment - Increased to 17 from 15
             if (gamepad2.left_trigger > 0.1) {
                 armLocationDelta /= 2;
@@ -174,14 +227,16 @@ public class FTc7760_dual extends LinearOpMode {
                 armLocation -= armLocationDelta;
             } 
             
-            if (armLocation > armMinLocation) {                  //Keeps the arm from moving too much
+            if (armLocation < armMaxLocation) { 
+                armLocation = armMaxLocation;
+            } else if (armLocation > armMinLocation && !armMinLocationIgnore) {                  //Keeps the arm from moving too much
                 armLocation = armMinLocation;
-            } else if (armLocation < armMaxLocation) { 
-                //armLocation = armMaxLocation;
             }
 
             armDrive.setTargetPosition(armLocation);
             armDrive.setPower(1.0);                 //Now with full power! Originally had only 0.5 power
+            
+            telemetry.addData("Duck Wheel Ticks", "%d", quackWheelTicks);
             
             telemetry.addData("Arm", "Location %d", armLocation); 
             telemetry.addData("Arm", "Current position %d", armDrive.getCurrentPosition()); 
