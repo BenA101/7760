@@ -11,20 +11,24 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="FTC7760 Dual Controller Mode", group="Linear Opmode")
+@TeleOp(name="FTC7760 New Dual Controller Mode", group="Linear Opmode")
 public class FTC7760TeleOpDualControllerMode extends FTC7760TeleOpBase {
     
     //I don't actually know how to run functions in Java, hilariously.
     
     @Override
-    
     public void runOpMode() {
+        setupRobot();
+                
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+        runtime.reset();
+
         while (opModeIsActive()) {
             
             //Driving input
-            y = -gamepad1.left_stick_y;
-            x = gamepad1.left_stick_x;
-            rx = gamepad1.right_stick_x;
+            roboCentricDriving(-gamepad1.left_stick_y, gamepad1.left_stick_x,
+                               gamepad1.right_stick_x);
             
             //Manual Quack Wheel input
             if (gamepad2.a) {
@@ -38,6 +42,8 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760TeleOpBase {
                 quackWheelManualRed = false;
             }
             
+            quackWheelManual();
+            
             //Single duck Quack Wheel input
             if (gamepad2.x) {
                 quackWheelSingleBlue = true;
@@ -49,6 +55,8 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760TeleOpBase {
             } else {
                 quackWheelSingleBlue = false;
             }
+            
+            quackWheelSingle();
             
             //Intake input
             if (gamepad1.left_bumper) {
@@ -62,6 +70,8 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760TeleOpBase {
                 intakeOut = false;
             }
             
+            intake();
+            
             //Arm input
             if (gamepad2.left_bumper) {
                 armUp = true;
@@ -73,6 +83,10 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760TeleOpBase {
             } else {
                 armDown = false;
             }
+            
+            armManual();
+            
+            telemetry();
         }
     }
 }

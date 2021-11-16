@@ -47,7 +47,7 @@ public class FTC7760TeleOpBase extends LinearOpMode {
     public final boolean armRaisesAfterIntaking = true;
     
     //The height the arm lifts after intaking, if armRaisesAfterIntaking is true
-    public final int armDrivingHeight = -200;
+    public final int armDrivingHeight = -200;  // TODO: make all arm heights positive!!!
     
     //Arm minimum and maximum location, used to stop the arm from moving where it cannot move
     public final int armMinLocation = 0;
@@ -64,7 +64,7 @@ public class FTC7760TeleOpBase extends LinearOpMode {
     public double SPEED_REDUCER = 1.0;
     
     //Current quack wheel tick position. Used to spin off a single duck
-    public int quackWheelTicks = duckDrive.getCurrentPosition();
+    public int quackWheelTicks = 0;
     
     //Positions where the quack wheel starts spinning quickly and stops spinning;
     //used to spin off a single duck
@@ -90,9 +90,6 @@ public class FTC7760TeleOpBase extends LinearOpMode {
     Input variables
     ---------------*/
     
-    public double y = 0;
-    public double x = 0;
-    public double rx = 0;
     public boolean quackWheelSuperSpeedEnabled = false;
     public boolean quackWheelManualBlue = false;
     public boolean quackWheelManualRed = false;
@@ -101,15 +98,16 @@ public class FTC7760TeleOpBase extends LinearOpMode {
     public boolean intakeIn = false;
     public boolean intakeOut = false;
     public boolean armHalfSpeed = false;
+    
+    
     public boolean armUp = false;
     public boolean armDown = false;
     
     @Override
-    
     public void runOpMode() {}
     
     //Sets up TeleOp modes. Run at the beginning of every TeleOp mode.
-    public void setupOpMode() {
+    public void setupRobot() {
         
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -151,15 +149,10 @@ public class FTC7760TeleOpBase extends LinearOpMode {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
-        
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        runtime.reset();
     }
     
     //Robot oriented drive function
-    public void roboCentricDriving() {
-        
+    public void roboCentricDriving(double y, double x, double rx) {
         if (y < 0.1 && y > -0.1) {
             y = 0;
         }
