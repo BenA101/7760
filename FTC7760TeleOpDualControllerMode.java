@@ -1,52 +1,43 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="FTC7760 New Dual Controller Mode", group="Linear Opmode")
+@TeleOp(name = "FTC7760 New Dual Controller Mode", group = "Linear Opmode")
 public class FTC7760TeleOpDualControllerMode extends FTC7760TeleOpBase {
-    
+
     @Override
     public void runOpMode() {
         setupRobot();
-                
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
-            
-            //Driving input
+
+            // Driving input
             roboCentricDriving(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-            
-            //Manual Quack Wheel input
+
+            // Manual Quack Wheel input
             quackWheelManualBlue = gamepad2.a;
             quackWheelManualRed = gamepad2.y && !gamepad2.a;
             quackWheelManual();
-            
-            //Single duck Quack Wheel input
+
+            // Single duck Quack Wheel input
             quackWheelSingleBlue = gamepad2.x;
             quackWheelSingleRed = gamepad2.b && !gamepad2.x;
             quackWheelSingle();
 
-            //Intake input
+            // Intake input
             intakeIn = gamepad1.left_bumper;
             intakeOut = gamepad1.right_bumper && !gamepad1.left_bumper;
             intake();
-            
-            //Arm input
+
+            // Arm input
             armUp = gamepad2.left_bumper;
             armDown = gamepad2.right_bumper && !gamepad2.left_bumper;
             armManual();
-            
+
             telemetry();
         }
     }
