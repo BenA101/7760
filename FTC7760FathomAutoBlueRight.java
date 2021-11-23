@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "FTC7760 Auto Blue Right", group = "Linear Opmode")
+@Autonomous(name = "FTC7760 Auto Blue Right", group = "Blue Auto", preselectTeleOp = "FTC7760 Dual Controller Mode")
 public class FTC7760FathomAutoBlueRight extends FTC7760FathomAutoBase {
 
     @Override
