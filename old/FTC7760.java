@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.old;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -10,9 +10,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="FTC7760 Dual Controllers", group="Linear Opmode")
+@TeleOp(name="FTC7760 Dual Controllers old 2", group="Linear Opmode")
+@Disabled
 
-    public class FTC7760 extends LinearOpMode {
+public class FTC7760 extends LinearOpMode {
 
     private double SPEED_REDUCER = 1.0;
 
