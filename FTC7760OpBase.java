@@ -11,6 +11,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 // DON'T put controller input in this file.
 // Instead, have control mode files modify input variables.
 
+// This is the base class for all of our op modes. It has the hardware setup, and basic methods
+// to drive and move pieces of the robot.
+
 public abstract class FTC7760OpBase extends LinearOpMode {
 
     /*-------------------

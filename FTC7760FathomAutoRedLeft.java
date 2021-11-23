@@ -9,8 +9,8 @@ public class FTC7760FathomAutoRedLeft extends FTC7760FathomAutoBase {
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        
-        setupOpMode();
+
+        setupRobot();
         
         double movement_speed = 0.25;
         driveForFathoms(0.0, movement_speed, 0.0, 1.0 / 3.0 * 2.0);
