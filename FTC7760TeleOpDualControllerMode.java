@@ -14,8 +14,6 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name="FTC7760 New Dual Controller Mode", group="Linear Opmode")
 public class FTC7760TeleOpDualControllerMode extends FTC7760TeleOpBase {
     
-    //I don't actually know how to run functions in Java, hilariously.
-    
     @Override
     public void runOpMode() {
         setupRobot();
@@ -27,63 +25,26 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760TeleOpBase {
         while (opModeIsActive()) {
             
             //Driving input
-            roboCentricDriving(-gamepad1.left_stick_y, gamepad1.left_stick_x,
-                               gamepad1.right_stick_x);
+            roboCentricDriving(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             
             //Manual Quack Wheel input
-            if (gamepad2.a) {
-                quackWheelManualBlue = true;
-            } else {
-                quackWheelManualBlue = false;
-            }
-            if (gamepad2.y && !gamepad2.a) {
-                quackWheelManualRed = true;
-            } else {
-                quackWheelManualRed = false;
-            }
-            
+            quackWheelManualBlue = gamepad2.a;
+            quackWheelManualRed = gamepad2.y && !gamepad2.a;
             quackWheelManual();
             
             //Single duck Quack Wheel input
-            if (gamepad2.x) {
-                quackWheelSingleBlue = true;
-            } else {
-                quackWheelSingleBlue = false;
-            }
-            if (gamepad2.b && !gamepad2.x) {
-                quackWheelSingleRed = true;
-            } else {
-                quackWheelSingleBlue = false;
-            }
-            
+            quackWheelSingleBlue = gamepad2.x;
+            quackWheelSingleRed = gamepad2.b && !gamepad2.x;
             quackWheelSingle();
-            
+
             //Intake input
-            if (gamepad1.left_bumper) {
-                intakeIn = true;
-            } else {
-                intakeIn = false;
-            }
-            if (gamepad1.right_bumper && !gamepad1.left_bumper) {
-                intakeOut = true;
-            } else {
-                intakeOut = false;
-            }
-            
+            intakeIn = gamepad1.left_bumper;
+            intakeOut = gamepad1.right_bumper && !gamepad1.left_bumper;
             intake();
             
             //Arm input
-            if (gamepad2.left_bumper) {
-                armUp = true;
-            } else {
-                armUp = false;
-            }
-            if (gamepad2.right_bumper && !gamepad2.left_bumper) {
-                armDown = true;
-            } else {
-                armDown = false;
-            }
-            
+            armUp = gamepad2.left_bumper;
+            armDown = gamepad2.right_bumper && !gamepad2.left_bumper;
             armManual();
             
             telemetry();
