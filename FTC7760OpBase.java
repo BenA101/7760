@@ -35,9 +35,6 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     Constants that are not modified during the match:
     -------------------------------------------------*/
 
-    // Currently does nothing
-    public final boolean fieldCentricDriving = true;
-
     // The fast and slow speeds of the quack wheel
     public final int quackSlowSpeed = 500;
     public final int quackSuperSpeed = 10000;
@@ -58,6 +55,9 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     /*-------------------------------------------------------------------
     Variables used to control the robot that change throughout the match:
     ---------------------------------------------------------------------*/
+
+    // Toggle this to switch between field and robot centric driving.
+    public boolean fieldCentricDriving = true;
 
     // Current quack wheel tick position. Used to spin off a single duck
     public int quackWheelTicks = 0;
@@ -145,13 +145,27 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         telemetry.update();
     }
 
-    // Robot oriented drive function
-    public void roboCentricDriving(double y, double x, double rx, boolean goSlow) {
+    // Driving for both robot- and field-centric modes.
+    public void drive(double y, double x, double rx, boolean goSlow) {
         if (y < 0.1 && y > -0.1) {
             y = 0;
         }
         if (x < 0.1 && x > -0.1) {
             x = 0;
+        }
+
+        if (fieldCentricDriving) {
+            telemetry.addData("Driving mode", "FIELD-CENTRIC");
+            double angle = -imu.getAngularOrientation().firstAngle;
+            telemetry.addData("Heading", "%f", angle);
+
+            // From https://www.ctrlaltftc.com/practical-examples/drivetrain-control
+            double x_rotated = x * Math.cos(angle) - y * Math.sin(angle);
+            double y_rotated = x * Math.sin(angle) + y * Math.cos(angle);
+            x = x_rotated;
+            y = y_rotated;
+        } else {
+            telemetry.addData("Driving mode", "ROBOT");
         }
 
         // This code is pulled from Game Manual 0
