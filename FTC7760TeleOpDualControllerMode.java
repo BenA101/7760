@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "FTC7760 New Dual Controller Mode", group = "Linear Opmode")
-public class FTC7760TeleOpDualControllerMode extends FTC7760TeleOpBase {
+public class FTC7760TeleOpDualControllerMode extends FTC7760OpBase {
 
     @Override
     public void runOpMode() {
