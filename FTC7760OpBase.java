@@ -99,7 +99,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
 
     // Sets up the robot for any op mode. Run at the beginning of every TeleOp or Auto mode.
     public void setupRobot() {
-        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
         // Initialize the hardware variables. Note that the strings used here as parameters
@@ -140,6 +140,9 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
     }
 
     // Robot oriented drive function
