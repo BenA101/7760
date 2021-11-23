@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -43,11 +44,11 @@ public class FTC7760TeleOpBase extends LinearOpMode {
     public final boolean armRaisesAfterIntaking = false;
 
     // The height the arm lifts after intaking, if armRaisesAfterIntaking is true
-    public final int armDrivingHeight = -200;  // TODO: make all arm heights positive!!!
+    public final int armDrivingHeight = 200;
 
     // Arm minimum and maximum location, used to stop the arm from moving where it cannot move
     public final int armMinLocation = 0;
-    public final int armMaxLocation = -4000;
+    public final int armMaxLocation = 4000;
 
     // Base speed of arm movement
     public final int armIncrement = 17;
@@ -130,7 +131,7 @@ public class FTC7760TeleOpBase extends LinearOpMode {
         armDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armDrive.setTargetPosition(0);
         armDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armDrive.setDirection(DcMotor.Direction.FORWARD);
+        armDrive.setDirection(DcMotor.Direction.REVERSE);
         armDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //                                    P     I   D    F
         armDrive.setVelocityPIDFCoefficients(5.0, 0.1, 2.0, 7.0);
@@ -258,7 +259,7 @@ public class FTC7760TeleOpBase extends LinearOpMode {
                 intakePullingIn = false;
 
                 // Pull the arm up to driving height if necessary
-                if (armDrive.getCurrentPosition() > armDrivingHeight && armRaisesAfterIntaking) {
+                if (armDrive.getCurrentPosition() < armDrivingHeight && armRaisesAfterIntaking) {
                     armLocation = armDrivingHeight;
                 }
             }
@@ -280,16 +281,16 @@ public class FTC7760TeleOpBase extends LinearOpMode {
             armLocationDelta /= 2;
         }
         if (armDown) {
-            armLocation += armLocationDelta;
-        } else if (armUp) {
             armLocation -= armLocationDelta;
+        } else if (armUp) {
+            armLocation += armLocationDelta;
         } else {
             armLocation = armDrive.getCurrentPosition();
         }
 
-        if (armLocation < armMaxLocation) {
+        if (armLocation > armMaxLocation) {
             armLocation = armMaxLocation;
-        } else if (armLocation > armMinLocation && !armMinLocationIgnore) {
+        } else if (armLocation < armMinLocation && !armMinLocationIgnore) {
             // Keeps the arm from moving too much
             armLocation = armMinLocation;
         }
