@@ -144,7 +144,7 @@ public class FTC7760TeleOpBase extends LinearOpMode {
     }
 
     // Robot oriented drive function
-    public void roboCentricDriving(double y, double x, double rx) {
+    public void roboCentricDriving(double y, double x, double rx, boolean goSlow) {
         if (y < 0.1 && y > -0.1) {
             y = 0;
         }
@@ -165,7 +165,7 @@ public class FTC7760TeleOpBase extends LinearOpMode {
         double rightRearDrivePower = (y + x - rx) / denominator;
 
         double speedReducer = 1.0;
-        if (gamepad1.right_trigger > 0.1) {     // Halves the power going to the drive wheels
+        if (goSlow) {     // Halves the power going to the drive wheels
             speedReducer = 0.5;
         }
 

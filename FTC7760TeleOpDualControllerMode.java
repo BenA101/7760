@@ -16,7 +16,8 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760TeleOpBase {
         while (opModeIsActive()) {
 
             // Driving input
-            roboCentricDriving(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            roboCentricDriving(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
+                    gamepad1.right_trigger > 0.1);
 
             // Manual Quack Wheel input
             quackWheelManualBlue = gamepad2.a;
