@@ -15,6 +15,10 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760OpBase {
 
         while (opModeIsActive()) {
 
+            if (gamepad1.start) {
+                fieldCentricDriving = gamepad1.a;
+            }
+
             // Driving input
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
                     gamepad1.right_trigger > 0.1);
