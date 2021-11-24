@@ -145,6 +145,11 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         telemetry.update();
     }
 
+    // Return our robot's IMU heading, in radians.
+    public double getHeading() {
+        return -imu.getAngularOrientation().firstAngle;
+    }
+
     // Driving for both robot- and field-centric modes.
     public void drive(double y, double x, double rx, boolean goSlow) {
         if (y < 0.1 && y > -0.1) {
@@ -156,8 +161,12 @@ public abstract class FTC7760OpBase extends LinearOpMode {
 
         if (fieldCentricDriving) {
             telemetry.addData("Driving mode", "FIELD-CENTRIC");
-            double angle = -imu.getAngularOrientation().firstAngle;
-            telemetry.addData("Heading", "%f", angle);
+            double angle = getHeading();
+            telemetry.addData("Bot Heading", "%f", angle);
+
+            // Adjust our heading based on where we started and ending in auto
+            angle += Math.toRadians(AutoToTeleStorage.startingHeadingDegrees) + AutoToTeleStorage.finalAutoHeading;
+            telemetry.addData("Adjusted Heading", "%f", angle);
 
             // From https://www.ctrlaltftc.com/practical-examples/drivetrain-control
             double x_rotated = x * Math.cos(angle) - y * Math.sin(angle);

@@ -6,14 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class FTC7760FathomAutoRedLeft extends FTC7760FathomAutoBase {
 
     @Override
-    public void runOpMode() {
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
-        setupRobot();
-
-        // Wait for the game to start
-        waitForStart();
+    public void runAuto() {
+        setStartingHeading(0); // TODO: Tristan, please update this!
 
         double movement_speed = 0.25;
         driveForFathoms(0.0, movement_speed, 0.0, 1.0 / 3.0 * 2.0);

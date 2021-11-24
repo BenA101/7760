@@ -17,6 +17,24 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
 
     public final int armAutoHeight = 400;
 
+    @Override
+    public void runOpMode() throws InterruptedException {
+        setupRobot();
+        waitForStart();
+        runAuto();
+        rememberFinalHeading();
+    }
+
+    abstract public void runAuto() throws InterruptedException;
+
+    public void setStartingHeading(int degrees) {
+        AutoToTeleStorage.startingHeadingDegrees = degrees;
+    }
+
+    public void rememberFinalHeading() throws InterruptedException {
+        AutoToTeleStorage.finalAutoHeading = getHeading();
+    }
+
     public void driveForTime(double y, double x, double rx, double time) {
         runtime.reset();
 
