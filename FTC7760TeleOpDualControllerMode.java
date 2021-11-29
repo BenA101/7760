@@ -38,7 +38,22 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760OpBase {
             intakeOut = gamepad1.right_bumper && !gamepad1.left_bumper;
             intake();
 
-            // Arm input
+            // Arm Auto input
+            if (gamepad2.dpad_up) {
+                armAutoHigh();
+            } else if (gamepad2.dpad_right) {
+                armAutoMiddle();
+            } else if (gamepad2.dpad_down) {
+                armAutoLow();
+            } else if (gamepad2.dpad_left) {
+                armAutoSafe();
+            } else if (gamepad2.left_trigger > 0.1 && gamepad2.right_trigger > 0.1) {
+                armAutoIntake();
+            } else if (gamepad2.left_trigger > 0.1) {
+                armAutoDrive();
+            }
+
+            // Arm Manual input
             armUp = gamepad2.left_bumper;
             armDown = gamepad2.right_bumper && !gamepad2.left_bumper;
             armManual();

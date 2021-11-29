@@ -290,9 +290,21 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         }
     }
 
+    public void armLimitSwitchReset() {
+        armDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armLocation = armMinLocation;
+        armDrive.setTargetPosition(0);
+        armDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armDrive.setPower(0.0);
+    }
+
     // Function which resets minimum arm position to current position
     public void armResetMin() {
-        // TODO: run the arm down until the limit switch is triggered first.
+        while (!armLimitSwitch.getState()) {
+            armDrive.setTargetPosition(-7760);
+            armDrive.setPower(1.0);
+        }
+        armLimitSwitchReset();
     }
 
     // Function for manually raising the arm up and down by a certain increment
@@ -309,7 +321,8 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         } else if (armUp) {
             armLocation += armLocationDelta;
         } else {
-            armLocation = armDrive.getCurrentPosition();
+            //TODO: Interferes with ArmAuto, figure out a better way to correct for overshoot
+            //armLocation = armDrive.getCurrentPosition();
         }
 
         if (armLocation > armMaxLocation) {
@@ -319,19 +332,12 @@ public abstract class FTC7760OpBase extends LinearOpMode {
             armLocation = armMinLocation;
         }
 
-        // Sets the arm to the correct position
-        armDrive.setTargetPosition(armLocation);
-        armDrive.setPower(1.0);
-
         if (armDown && armLimitSwitch.getState()) {
-            armDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            armLocation = armMinLocation;
-            armDrive.setTargetPosition(0);
-            armDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            armDrive.setPower(0.0);
+            armLimitSwitchReset();
         } else {
+            // Sets the arm to the correct position
             armDrive.setTargetPosition(armLocation);
-            armDrive.setPower(.5);
+            armDrive.setPower(1.0);
         }
 
         telemetry.addData("Arm", "Location %d", armLocation);
@@ -339,8 +345,40 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         telemetry.addData("Arm Limit Switch", "%s", armLimitSwitch.getState());
     }
 
-    // TODO: armAuto will eventually become a thing
-    // armAuto will allow you to set the arm to a useful height at the press of a button
+    public void setArmPosition(int armLocation) {
+        armDrive.setTargetPositionTolerance(20);
+        armDrive.setTargetPosition(armLocation);
+        armDrive.setPower(1.0);
+        while (opModeIsActive() && armDrive.isBusy()) {
+            telemetry.addData("Arm", "Location %d", armLocation);
+            telemetry.addData("Arm", "Current position %d", armDrive.getCurrentPosition());
+            telemetry.update();
+        }
+    }
+
+    public void armAutoHigh() {
+        armLocation = 2900;
+    }
+
+    public void armAutoMiddle() {
+        armLocation = 3350;
+    }
+
+    public void armAutoLow() {
+        armLocation = 3650;
+    }
+
+    public void armAutoSafe() {
+        armLocation = 2000;
+    }
+
+    public void armAutoDrive() {
+        armLocation = 300;
+    }
+
+    public void armAutoIntake() {
+        armLocation = 0;
+    }
 
     // Function for displaying telemetry
     public void telemetry() {

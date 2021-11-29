@@ -89,17 +89,6 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
         driveForTicks(y, x, rx, fathoms * 72 * 25.4 * TICKS_PER_MM);
     }
 
-    public void setArmPosition(int armLocation) {
-        armDrive.setTargetPositionTolerance(20);
-        armDrive.setTargetPosition(armLocation);
-        armDrive.setPower(1.0);
-        while (opModeIsActive() && armDrive.isBusy()) {
-            telemetry.addData("Arm", "Location %d", armLocation);
-            telemetry.addData("Arm", "Current position %d", armDrive.getCurrentPosition());
-            telemetry.update();
-        }
-    }
-
     // Intakes if direction is set to false
     public void spinIntake(boolean direction, double time) {
         runtime.reset();
