@@ -81,6 +81,10 @@ public abstract class FTC7760OpBase extends LinearOpMode {
 
     // True if intake is intaking
     public boolean intakePullingIn = false;
+    
+    // True if doing a single quacker
+    public boolean quackRunning = false;
+    public boolean quackRunningDirection = false;
 
     /*-------------
     Input variables
@@ -217,7 +221,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
             duckDrive.setVelocity(quackWheelSpeed);
         } else if (quackWheelManualRed) {            // Reverse direction (For blue duck wheel I think)
             duckDrive.setVelocity(-quackWheelSpeed);
-        } else {
+        } else if (!quackRunning) {
             duckDrive.setVelocity(0);
         }
     }
@@ -228,41 +232,43 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     // Setting quackWheelManualBlue or quackWheelManualRed overrides this
     public void quackWheelSingle() {
         // Set quackWheelSingleBlue or quackWheelSingleRed to true to spin off a single Quack
-        if (quackWheelSingleBlue || quackWheelSingleRed) {
+        if (!quackRunning && (quackWheelSingleBlue || quackWheelSingleRed)) {
             duckDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            quackWheelTicks = 0;
-
-            // @TODO: remove while loops so we don't get stuck in here while driving!!
-
-            // Initial slow part
-            while (opModeIsActive() && Math.abs(quackWheelTicks) < quackSuperSpeedTickValue) {
-                if (quackWheelManualBlue || quackWheelManualRed) {
-                    break;
-                }
-                if (quackWheelSingleBlue) {
-                    duckDrive.setVelocity(quackSlowSpeed);
-                } else if (quackWheelSingleRed) {
-                    duckDrive.setVelocity(-quackSlowSpeed);
-                }
-                quackWheelTicks = duckDrive.getCurrentPosition();
+            // quackWheelTicks = 0;
+            
+             if (quackWheelSingleBlue) {
+                duckDrive.setVelocity(quackSlowSpeed);
+                quackRunningDirection = true;
+            } else {
+                duckDrive.setVelocity(-quackSlowSpeed);
+                quackRunningDirection = false;
             }
-
-            // Fast part at the end
-            while (opModeIsActive() && (Math.abs(quackWheelTicks) >= quackSuperSpeedTickValue) &&
-                    (Math.abs(quackWheelTicks) < quackStoppingPoint)) {
-                if (quackWheelManualBlue || quackWheelManualRed) {
-                    break;
-                }
-                if (quackWheelSingleBlue) {
+            quackRunning=true;
+            return;
+        }
+        
+        if (quackRunning) {
+            if (quackWheelManualBlue || quackWheelManualRed) {
+                quackRunning=false;
+                return;
+            }
+            
+            if (Math.abs(duckDrive.getCurrentPosition()) >= quackStoppingPoint) {
+                quackRunning=false;
+                duckDrive.setVelocity(0);
+                return;
+            }
+            
+            if (Math.abs(duckDrive.getCurrentPosition()) >= quackSuperSpeedTickValue) {
+                if (quackRunningDirection) {
                     duckDrive.setVelocity(quackSuperSpeed);
-                } else if (quackWheelSingleRed) {
+                } else {
                     duckDrive.setVelocity(-quackSuperSpeed);
                 }
-                quackWheelTicks = duckDrive.getCurrentPosition();
+                return;
             }
+            
         }
-
-        telemetry.addData("Duck Wheel Ticks", "%d", quackWheelTicks);
     }
 
     // Intake fun timez...
@@ -320,9 +326,6 @@ public abstract class FTC7760OpBase extends LinearOpMode {
             armLocation -= armLocationDelta;
         } else if (armUp) {
             armLocation += armLocationDelta;
-        } else {
-            //TODO: Interferes with ArmAuto, figure out a better way to correct for overshoot
-            //armLocation = armDrive.getCurrentPosition();
         }
 
         if (armLocation > armMaxLocation) {
@@ -337,7 +340,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         } else {
             // Sets the arm to the correct position
             armDrive.setTargetPosition(armLocation);
-            armDrive.setPower(1.0);
+            armDrive.setPower(1);
         }
 
         telemetry.addData("Arm", "Location %d", armLocation);
