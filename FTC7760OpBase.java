@@ -360,27 +360,33 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     }
 
     public void armAutoHigh() {
-        armLocation = 2900;
+        armLocation = 2850;
+        setArmPosition(armLocation);
     }
 
     public void armAutoMiddle() {
         armLocation = 3350;
+        setArmPosition(armLocation);
     }
 
     public void armAutoLow() {
         armLocation = 3650;
+        setArmPosition(armLocation);
     }
 
     public void armAutoSafe() {
         armLocation = 2000;
+        setArmPosition(armLocation);
     }
 
     public void armAutoDrive() {
         armLocation = 300;
+        setArmPosition(armLocation);
     }
 
     public void armAutoIntake() {
         armLocation = 0;
+        setArmPosition(armLocation);
     }
 
     // Function for displaying telemetry

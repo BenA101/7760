@@ -9,6 +9,7 @@ public class FTC7760FathomAutoBlueLeft extends FTC7760FathomAutoBase {
     public void runAuto() {
         setStartingHeading(-90);
 
+        armAutoDrive();
         double movement_speed = 0.25;
         driveForFathoms(0.0, movement_speed, 0.0, 1.0 / 3.0 * 2.0);
         driveForFathoms(-movement_speed, 0.0, 0.0, -1.0 / 3.0 * 0.1);
