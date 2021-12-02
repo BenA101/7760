@@ -8,7 +8,7 @@ public class FTC7760FathomAutoBlueTop extends FTC7760FathomAutoBase {
     @Override
     public void runAuto() {
         double movement_speed = 0.25;
-        
+
         armAutoDrive();
         driveForFathoms(movement_speed, 0.0, 0.0, 1.0 / 3.0 * 1.5);
     }

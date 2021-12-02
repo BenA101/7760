@@ -59,9 +59,6 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     // Toggle this to switch between field and robot centric driving.
     public boolean fieldCentricDriving = true;
 
-    // Current quack wheel tick position. Used to spin off a single duck
-    public int quackWheelTicks = 0;
-
     // Positions where the quack wheel starts spinning quickly and stops spinning;
     // used to spin off a single duck
     public int quackSuperSpeedTickValue = 400;
@@ -81,7 +78,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
 
     // True if intake is intaking
     public boolean intakePullingIn = false;
-    
+
     // True if doing a single quacker
     public boolean quackRunning = false;
     public boolean quackRunningDirection = false;
@@ -226,7 +223,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         }
     }
 
-    //Function for spinning off a single duck
+    // Function for spinning off a single duck
     //
     // Spins off a single duck if quackWheelSingleBlue or quackWheelSingleRed is set to true
     // Setting quackWheelManualBlue or quackWheelManualRed overrides this
@@ -234,31 +231,30 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         // Set quackWheelSingleBlue or quackWheelSingleRed to true to spin off a single Quack
         if (!quackRunning && (quackWheelSingleBlue || quackWheelSingleRed)) {
             duckDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            // quackWheelTicks = 0;
-            
-             if (quackWheelSingleBlue) {
+
+            if (quackWheelSingleBlue) {
                 duckDrive.setVelocity(quackSlowSpeed);
                 quackRunningDirection = true;
             } else {
                 duckDrive.setVelocity(-quackSlowSpeed);
                 quackRunningDirection = false;
             }
-            quackRunning=true;
+            quackRunning = true;
             return;
         }
-        
+
         if (quackRunning) {
             if (quackWheelManualBlue || quackWheelManualRed) {
-                quackRunning=false;
+                quackRunning = false;
                 return;
             }
-            
+
             if (Math.abs(duckDrive.getCurrentPosition()) >= quackStoppingPoint) {
-                quackRunning=false;
+                quackRunning = false;
                 duckDrive.setVelocity(0);
                 return;
             }
-            
+
             if (Math.abs(duckDrive.getCurrentPosition()) >= quackSuperSpeedTickValue) {
                 if (quackRunningDirection) {
                     duckDrive.setVelocity(quackSuperSpeed);
@@ -267,7 +263,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
                 }
                 return;
             }
-            
+
         }
     }
 
@@ -348,6 +344,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         telemetry.addData("Arm Limit Switch", "%s", armLimitSwitch.getState());
     }
 
+    // TODO: move this down in to auto. Never have while loops in teleop!!!
     public void setArmPosition(int armLocation) {
         armDrive.setTargetPositionTolerance(20);
         armDrive.setTargetPosition(armLocation);

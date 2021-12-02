@@ -17,10 +17,44 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
 
     public final int armAutoHeight = 400;
 
+    // Default to the highest position for the best score if the camera fails, or we don't use one.
+    protected TSEDetector.TSEPosition tseStartingPosition = TSEDetector.TSEPosition.RIGHT;
+    private final String cameraName;
+
+    // Setup the auto mode with no camera
+    public FTC7760FathomAutoBase() {
+        cameraName = null;
+    }
+
+    // Setup the auto mode, selecting a camera to use
+    public FTC7760FathomAutoBase(String cameraName) {
+        this.cameraName = cameraName;
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
         setupRobot();
-        waitForStart();
+
+        if (cameraName != null) {
+            TSEDetector tseDetector = new TSEDetector(hardwareMap);
+            tseDetector.setupCamera(cameraName);
+
+            // Display the TSE position while we're waiting to start the opmode.
+            while (!isStarted()) {
+                telemetry.addData("TSE Detector", "Camera %s", cameraName);
+                telemetry.addData("TSE Detector", "Position %s", tseDetector.getPosition());
+                telemetry.update();
+
+                // Sleep a bit so we don't waste battery while waiting. 20 times a second is plenty.
+                sleep(50);
+            }
+
+            // Remember the position of the TSE before we start moving the bot!
+            tseStartingPosition = tseDetector.getPosition();
+        } else {
+            waitForStart();
+        }
+
         runAuto();
         rememberFinalHeading();
     }
