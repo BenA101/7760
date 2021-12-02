@@ -57,6 +57,9 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
         rightRearDrive.setPower(0);
     }
 
+    //Power to positive y moves the robot forward. Power to positive x moves the robot right.
+    //Rx is rotation power.
+    //In order to reverse the direction, you must multiply both the power and distance by -1.
     public void driveForTicks(double y, double x, double rx, double ticks) {
         boolean positiveDir = ticks > 0;
         double endTicks = leftFrontDrive.getCurrentPosition() + ticks;
