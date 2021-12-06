@@ -9,12 +9,15 @@ public class FTC7760FathomAutoBlueRight extends FTC7760FathomAutoBase {
     public void runAuto() {
         setStartingHeading(90);
 
+        // TODO: use the TSE position via "tseStartingPosition", it will be LEFT, CENTER, or RIGHT.
+
         double movement_speed = 0.25;
+        armPresetHigh(); // Start moving the arm up while we're getting into position...
         driveForFathoms(0.0, -movement_speed, 0.0, -1.0 / 3.0 * 2.0);
         driveForFathoms(-movement_speed, 0.0, 0.0, -1.0 / 3.0 * 0.1);
-        armAutoHigh();
+        waitForArm(); // ... and now wait to be sure the arm is up before we try to score!
         spinIntake(true, 2.0);
-        armAutoSafe();
+        armPresetSafe(); // Don't wait for this one, it'll move while we're driving.
         driveForTime(-movement_speed, 0.0, 0.0, 0.75 / movement_speed);
         driveForFathoms(0.0, movement_speed, 0.0, 1.0 / 3.0 * 0.75);
     }

@@ -9,7 +9,9 @@ public class FTC7760FathomAutoBlueTop extends FTC7760FathomAutoBase {
     public void runAuto() {
         double movement_speed = 0.25;
 
-        armAutoDrive();
+        // TODO: use the TSE position via "tseStartingPosition", it will be LEFT, CENTER, or RIGHT.
+
+        armPresetDrive();
         driveForFathoms(movement_speed, 0.0, 0.0, 1.0 / 3.0 * 1.5);
     }
 }

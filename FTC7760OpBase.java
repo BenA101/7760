@@ -128,6 +128,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         duckDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         armDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armDrive.setTargetPositionTolerance(20);
         armDrive.setTargetPosition(0);
         armDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -344,46 +345,39 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         telemetry.addData("Arm Limit Switch", "%s", armLimitSwitch.getState());
     }
 
-    // TODO: move this down in to auto. Never have while loops in teleop!!!
-    public void setArmPosition(int armLocation) {
-        armDrive.setTargetPositionTolerance(20);
+    // -----------------------------------------------------
+    // Preset positions for the arm
+    //
+    // These set the destination for the arm and start it moving.
+
+    public void armPresetHigh() {
+        setArmPosition(2850);
+    }
+
+    public void armPresetMiddle() {
+        setArmPosition(3350);
+    }
+
+    public void armPresetLow() {
+        setArmPosition(3650);
+    }
+
+    public void armPresetSafe() {
+        setArmPosition(2000);
+    }
+
+    public void armPresetDrive() {
+        setArmPosition(300);
+    }
+
+    public void armPresetIntake() {
+        setArmPosition(0);
+    }
+
+    private void setArmPosition(int destination) {
+        armLocation = destination; // Ensures this works well with manual control, too.
         armDrive.setTargetPosition(armLocation);
         armDrive.setPower(1.0);
-        while (opModeIsActive() && armDrive.isBusy()) {
-            telemetry.addData("Arm", "Location %d", armLocation);
-            telemetry.addData("Arm", "Current position %d", armDrive.getCurrentPosition());
-            telemetry.update();
-        }
-    }
-
-    public void armAutoHigh() {
-        armLocation = 2850;
-        setArmPosition(armLocation);
-    }
-
-    public void armAutoMiddle() {
-        armLocation = 3350;
-        setArmPosition(armLocation);
-    }
-
-    public void armAutoLow() {
-        armLocation = 3650;
-        setArmPosition(armLocation);
-    }
-
-    public void armAutoSafe() {
-        armLocation = 2000;
-        setArmPosition(armLocation);
-    }
-
-    public void armAutoDrive() {
-        armLocation = 300;
-        setArmPosition(armLocation);
-    }
-
-    public void armAutoIntake() {
-        armLocation = 0;
-        setArmPosition(armLocation);
     }
 
     // Function for displaying telemetry

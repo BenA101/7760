@@ -15,8 +15,6 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
     // Our mecanum wheels are 96mm diameter, thus the equation below.
     public static final double TICKS_PER_MM = 537.7 / (96 * Math.PI);
 
-    public final int armAutoHeight = 400;
-
     // Default to the highest position for the best score if the camera fails, or we don't use one.
     protected TSEDetector.TSEPosition tseStartingPosition = TSEDetector.TSEPosition.RIGHT;
     private final String cameraName;
@@ -143,5 +141,15 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
             telemetry.update();
         }
         intakeDrive.setPower(0.0);
+    }
+
+    // Waits for the arm to get to it's desired position. Call this after asking it to go to a
+    // preset.
+    public void waitForArm() {
+        while (opModeIsActive() && armDrive.isBusy()) {
+            telemetry.addData("Arm", "Desired position %d", armLocation);
+            telemetry.addData("Arm", "Current position %d", armDrive.getCurrentPosition());
+            telemetry.update();
+        }
     }
 }
