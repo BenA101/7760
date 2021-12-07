@@ -27,7 +27,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     public DcMotor rightRearDrive = null;
     public DcMotorEx duckDrive = null;
     public DcMotorEx armDrive = null;
-    public CRServo intakeDrive = null;
+    public DcMotor intakeDrive = null;
     public BNO055IMU imu = null;
     public DigitalChannel armLimitSwitch;
 
@@ -112,7 +112,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         rightRearDrive = hardwareMap.get(DcMotor.class, "rightRearDrive");
         duckDrive = hardwareMap.get(DcMotorEx.class, "Quack wheel");
         armDrive = hardwareMap.get(DcMotorEx.class, "arm");
-        intakeDrive = hardwareMap.get(CRServo.class, "intake");
+        intakeDrive = hardwareMap.get(DcMotor.class, "intake");
         armLimitSwitch = hardwareMap.get(DigitalChannel.class, "armLimitSwitch");
 
         // Most robots need the motor on one side to be reversed to drive forward
@@ -305,7 +305,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     public void armResetMin() {
         while (!armLimitSwitch.getState()) {
             armDrive.setTargetPosition(-7760);
-            armDrive.setPower(1.0);
+            armDrive.setPower(0.3);
         }
         armLimitSwitchReset();
     }

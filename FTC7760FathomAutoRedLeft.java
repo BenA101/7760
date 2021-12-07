@@ -5,14 +5,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name = "FTC7760 Auto Red Left", group = "Red Auto", preselectTeleOp = "FTC7760 Dual Controller Mode")
 public class FTC7760FathomAutoRedLeft extends FTC7760FathomAutoBase {
 
+    public FTC7760FathomAutoRedLeft() {
+        super(TSEDetector.CAMERA_1_NAME);
+    }
+
     @Override
     public void runAuto() {
         setStartingHeading(-90);
 
-        // TODO: use the TSE position via "tseStartingPosition", it will be LEFT, CENTER, or RIGHT.
-
         double movement_speed = 0.25;
-        armPresetHigh(); // Start moving the arm up while we're getting into position...
+        // Start moving the arm up while we're getting into position...
+        moveArmForTSE();
         driveForFathoms(0.0, movement_speed, 0.0, 1.0 / 3.0 * 2.0);
         driveForFathoms(-movement_speed, 0.0, 0.0, -1.0 / 3.0 * 0.1);
         waitForArm(); // ... and now wait to be sure the arm is up before we try to score!

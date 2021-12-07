@@ -124,6 +124,38 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
         driveForTicks(y, x, rx, fathoms * 72 * 25.4 * TICKS_PER_MM);
     }
 
+
+    public void rotateDegrees(double degrees, double rx) {
+        double x = 0;
+        double y = 0;
+
+        double endAngle = Math.toRadians(degrees);
+        boolean positiveDir = getHeading() < degrees;
+
+        while (opModeIsActive() &&
+                ((positiveDir && getHeading() < endAngle) ||
+                        (!positiveDir && getHeading() > endAngle))) {
+            telemetry.addData("Bot Heading", "%f", getHeading());
+            telemetry.addData("Destination Heading", "%f", endAngle);
+            telemetry.update();
+
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double leftFrontDrivePower = (y + x + rx) / denominator;
+            double leftRearDrivePower = (y - x + rx) / denominator;
+            double rightFrontDrivePower = (y - x - rx) / denominator;
+            double rightRearDrivePower = (y + x - rx) / denominator;
+
+            leftFrontDrive.setPower(leftFrontDrivePower);
+            leftRearDrive.setPower(leftRearDrivePower);
+            rightFrontDrive.setPower(rightFrontDrivePower);
+            rightRearDrive.setPower(rightRearDrivePower);
+        }
+        leftFrontDrive.setPower(0);
+        leftRearDrive.setPower(0);
+        rightFrontDrive.setPower(0);
+        rightRearDrive.setPower(0);
+    }
+
     // Intakes if direction is set to false
     public void spinIntake(boolean direction, double time) {
         runtime.reset();
@@ -151,5 +183,15 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
             telemetry.addData("Arm", "Current position %d", armDrive.getCurrentPosition());
             telemetry.update();
         }
+    }
+    
+    public void moveArmForTSE(){
+        if (tseStartingPosition == TSEDetector.TSEPosition.RIGHT) {
+            armPresetHigh(); 
+        } else if (tseStartingPosition == TSEDetector.TSEPosition.CENTER) {
+            armPresetMiddle();
+        } else {
+            armPresetLow();
+        }  
     }
 }
