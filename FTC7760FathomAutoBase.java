@@ -163,7 +163,8 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
         double timeLeft;   // For telemetry
         while (opModeIsActive() && runtime.seconds() < time) {
             if (direction) {
-                intakeDrive.setPower(1);
+                intakeDrive.setPower(0.9);
+                telemetry.addData("Spinning", "%f", time);
             } else {
                 intakeDrive.setPower(-1);
             }
@@ -193,5 +194,18 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
         } else {
             armPresetLow();
         }  
+    }
+    
+    //True is red, false is blue
+    public void quackForTime(boolean direction, double time) {
+        runtime.reset();
+        while (opModeIsActive() && runtime.seconds() < time) {
+            if (direction) {
+                duckDrive.setVelocity(-quackAutoSpeed);
+            } else {
+                duckDrive.setVelocity(quackAutoSpeed);
+            }
+        }
+        duckDrive.setVelocity(0.0);
     }
 }

@@ -38,6 +38,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     // The fast and slow speeds of the quack wheel
     public final int quackSlowSpeed = 500;
     public final int quackSuperSpeed = 10000;
+    public final int quackAutoSpeed = 250;
 
     // Arm raises after intaking if set to true
     public final boolean armRaisesAfterIntaking = false;
@@ -126,7 +127,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         duckDrive.setDirection(DcMotor.Direction.FORWARD);
         duckDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         duckDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        
         armDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armDrive.setTargetPositionTolerance(20);
         armDrive.setTargetPosition(0);
@@ -275,7 +276,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     public void intake() {
         if (intakeIn || intakeOut) {
             if (intakeOut) {
-                intakeDrive.setPower(1);
+                intakeDrive.setPower(0.5);
             } else if (intakeIn) {
                 intakeDrive.setPower(-1);
                 intakePullingIn = true;
@@ -355,7 +356,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     }
 
     public void armPresetMiddle() {
-        setArmPosition(3350);
+        setArmPosition(3250);
     }
 
     public void armPresetLow() {
