@@ -2,24 +2,27 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "FTC7760 Auto Red Warehouse", group = "Red Auto", preselectTeleOp = "FTC7760 Dual Controller Mode")
-public class FTC7760FathomAutoRedWarehouse extends FTC7760FathomAutoBase {
+@Autonomous(name = "FTC7760 Auto Blue Warehouse", group = "Blue Auto", preselectTeleOp = "FTC7760 Dual Controller Mode")
+public class FTC7760FathomAutoBlueWarehouse extends FTC7760FathomAutoBase {
 
-    public FTC7760FathomAutoRedWarehouse() {
+    public FTC7760FathomAutoBlueWarehouse() {
         super(TSEDetector.CAMERA_1_NAME);
     }
 
     @Override
     public void runAuto() {
-        AutoToTeleStorage.quackDirection = false;
+        AutoToTeleStorage.quackDirection = true;
         setStartingHeading(0);
         double movement_speed = 0.3;
 
         // Start moving the arm up while we're getting into position...
         armPresetDrive();
-        if (tseStartingPosition == TSEDetector.TSEPosition.LEFT) {
+        if (tseStartingPosition == TSEDetector.TSEPosition.LEFT || tseStartingPosition == TSEDetector.TSEPosition.RIGHT) {
             driveForFathoms(0.0, movement_speed, 0.0, 1.0 / 3.0 / 24.0 * 1.0);
         }
+        
+        // Move right to avoid pipes
+        driveForFathoms(0.0, movement_speed, 0.0, 1.0 / 3.0 / 24.0 * 7.5);
         
         // Move forward x amount of fathoms
         driveForFathoms(movement_speed, 0.0, 0.0, 1.0 / 3.0 * 1.5);
@@ -27,7 +30,7 @@ public class FTC7760FathomAutoRedWarehouse extends FTC7760FathomAutoBase {
         // Rotate while moving to scoring container
         moveArmForTSE();
         waitForArm();
-        rotateDegrees(88, movement_speed);
+        rotateDegrees(-87, -movement_speed);
          
         // Spit out block
         spinIntake(true, 3.0);
@@ -39,7 +42,7 @@ public class FTC7760FathomAutoRedWarehouse extends FTC7760FathomAutoBase {
         //waitForArm();
         
         // Park
-        driveForTime(0.0, movement_speed, -0.02, 1.25 / movement_speed);
+        driveForTime(0.0, -movement_speed, 0.02, 1.25 / movement_speed);
         driveForFathoms(movement_speed, 0.0, 0.0, 1.0 / 3.0 * 1.25);
         armPresetDrive();
         waitForArm();

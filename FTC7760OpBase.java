@@ -59,6 +59,9 @@ public abstract class FTC7760OpBase extends LinearOpMode {
 
     // Toggle this to switch between field and robot centric driving.
     public boolean fieldCentricDriving = true;
+    
+    // Used to reset the heading
+    public double headingOffset;
 
     // Positions where the quack wheel starts spinning quickly and stops spinning;
     // used to spin off a single duck
@@ -87,12 +90,11 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     /*-------------
     Input variables
     ---------------*/
-
-    public boolean quackWheelSuperSpeedEnabled = false;
-    public boolean quackWheelManualBlue = false;
-    public boolean quackWheelManualRed = false;
-    public boolean quackWheelSingleBlue = false;
-    public boolean quackWheelSingleRed = false;
+    
+    public boolean quackWheelReverse = false;
+    public boolean quackWheelManualSuper = false;
+    public boolean quackWheelManualDefault = false;
+    public boolean quackWheelSingle = false;
     public boolean intakeIn = false;
     public boolean intakeOut = false;
     public boolean armHalfSpeed = false;
@@ -137,7 +139,8 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         //                                    P     I   D    F
         armDrive.setVelocityPIDFCoefficients(5.0, 0.1, 2.0, 7.0);
         // armDrive.setPositionPIDFCoefficients(50.0);
-        armResetMin();
+        // NOTE: If we uncommented the next, the arm could get stuck on a block. I'm not letting that happen.
+        // armResetMin();
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -150,10 +153,10 @@ public abstract class FTC7760OpBase extends LinearOpMode {
 
     // Return our robot's IMU heading, in radians.
     public double getHeading() {
-        return -imu.getAngularOrientation().firstAngle;
+        return -imu.getAngularOrientation().firstAngle - headingOffset;
     }
 
-    // Driving for both robot- and field-centric modes.
+    // Driving for both robot-centric and field-centric modes.
     public void drive(double y, double x, double rx, boolean goSlow) {
         if (y < 0.1 && y > -0.1) {
             y = 0;
@@ -202,51 +205,93 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         rightFrontDrive.setPower(rightFrontDrivePower * speedReducer);
         rightRearDrive.setPower(rightRearDrivePower * speedReducer);
     }
-
+    
+    // Resets heading to correct field centric driving
+    public void resetHeading() {
+        headingOffset = getHeading();
+    }
+    
     // Function for manually controlling the Quack Wheel
     //
     // Quack wheel spins quickly if quackWheelSuperSpeedEnabled is set to true
     // The quack wheel spins at a certain speed is quackWheelManualBlue or quackWheelManualRed is set to true
-    public void quackWheelManual() {
-        // Calculates Speed
-        if (quackWheelSuperSpeedEnabled) {
-            quackWheelSpeed = quackSuperSpeed;
-        } else {
-            quackWheelSpeed = quackSlowSpeed;
-        }
-
-        // Calculates Direction
-        if (quackWheelManualBlue) {                  // Normal direction (For red duck wheel I think)
-            duckDrive.setVelocity(quackWheelSpeed);
-        } else if (quackWheelManualRed) {            // Reverse direction (For blue duck wheel I think)
-            duckDrive.setVelocity(-quackWheelSpeed);
+    
+    //Spins quack wheel the correct direction by default
+    public void quackWheelManualSlow() {
+        if (quackWheelManualDefault) {
+            if (!quackWheelReverse) {
+                if (AutoToTeleStorage.quackDirection) {
+                    duckDrive.setVelocity(-quackSlowSpeed);
+                } else {
+                    duckDrive.setVelocity(quackSlowSpeed);
+                }
+            } else  {
+                if (AutoToTeleStorage.quackDirection) {
+                    duckDrive.setVelocity(quackSlowSpeed);
+                } else {
+                    duckDrive.setVelocity(-quackSlowSpeed);
+                }
+            }
         } else if (!quackRunning) {
             duckDrive.setVelocity(0);
         }
     }
 
+    public void quackWheelManualSuper() {
+        if (quackWheelManualSuper) {
+            if (!quackWheelReverse) {
+            if (AutoToTeleStorage.quackDirection) {
+                    duckDrive.setVelocity(-quackSuperSpeed);
+                } else {
+                    duckDrive.setVelocity(quackSuperSpeed);
+                }
+            } else {
+                if (AutoToTeleStorage.quackDirection) {
+                    duckDrive.setVelocity(quackSuperSpeed);
+                } else {
+                    duckDrive.setVelocity(-quackSuperSpeed);
+                }
+            }
+        } else if (!quackRunning) {
+            duckDrive.setVelocity(0);
+        }
+    }
+    
     // Function for spinning off a single duck
     //
     // Spins off a single duck if quackWheelSingleBlue or quackWheelSingleRed is set to true
     // Setting quackWheelManualBlue or quackWheelManualRed overrides this
+
     public void quackWheelSingle() {
         // Set quackWheelSingleBlue or quackWheelSingleRed to true to spin off a single Quack
-        if (!quackRunning && (quackWheelSingleBlue || quackWheelSingleRed)) {
+        if (!quackRunning && (quackWheelSingle)) {
             duckDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            if (quackWheelSingleBlue) {
-                duckDrive.setVelocity(quackSlowSpeed);
-                quackRunningDirection = true;
-            } else {
-                duckDrive.setVelocity(-quackSlowSpeed);
-                quackRunningDirection = false;
+            if (quackWheelSingle) {
+                if (AutoToTeleStorage.quackDirection) {
+                    if (!quackWheelReverse) {
+                        duckDrive.setVelocity(-quackSlowSpeed);
+                     quackRunningDirection = true;
+                    } else {
+                        duckDrive.setVelocity(quackSlowSpeed);
+                        quackRunningDirection = false;
+                    }
+                } else {
+                    if (!quackWheelReverse) {
+                        duckDrive.setVelocity(quackSlowSpeed);
+                        quackRunningDirection = true;
+                    } else {
+                        duckDrive.setVelocity(-quackSlowSpeed);
+                        quackRunningDirection = false;
+                    }
+                }
             }
             quackRunning = true;
             return;
         }
 
         if (quackRunning) {
-            if (quackWheelManualBlue || quackWheelManualRed) {
+            if (quackWheelManualDefault || quackWheelManualSuper) {
                 quackRunning = false;
                 return;
             }
@@ -258,10 +303,18 @@ public abstract class FTC7760OpBase extends LinearOpMode {
             }
 
             if (Math.abs(duckDrive.getCurrentPosition()) >= quackSuperSpeedTickValue) {
-                if (quackRunningDirection) {
-                    duckDrive.setVelocity(quackSuperSpeed);
+                if (AutoToTeleStorage.quackDirection) {
+                    if (quackRunningDirection) {
+                        duckDrive.setVelocity(-quackSuperSpeed);
+                    } else {
+                        duckDrive.setVelocity(quackSuperSpeed);
+                    }
                 } else {
-                    duckDrive.setVelocity(-quackSuperSpeed);
+                    if (quackRunningDirection) {
+                        duckDrive.setVelocity(quackSuperSpeed);
+                    } else {
+                        duckDrive.setVelocity(-quackSuperSpeed);
+                    }
                 }
                 return;
             }
@@ -303,10 +356,11 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     }
 
     // Function which resets minimum arm position to current position
+    // TODO: Get rid of controller input in armResetMin
     public void armResetMin() {
-        while (!armLimitSwitch.getState()) {
+        while (!armLimitSwitch.getState() && !gamepad2.right_stick_button) {
             armDrive.setTargetPosition(-7760);
-            armDrive.setPower(0.3);
+            armDrive.setPower(0.6);
         }
         armLimitSwitchReset();
     }
@@ -352,7 +406,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     // These set the destination for the arm and start it moving.
 
     public void armPresetHigh() {
-        setArmPosition(2850);
+        setArmPosition(2775);
     }
 
     public void armPresetMiddle() {
@@ -360,7 +414,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     }
 
     public void armPresetLow() {
-        setArmPosition(3650);
+        setArmPosition(3550);
     }
 
     public void armPresetSafe() {
@@ -374,7 +428,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     public void armPresetIntake() {
         setArmPosition(0);
     }
-
+    
     private void setArmPosition(int destination) {
         armLocation = destination; // Ensures this works well with manual control, too.
         armDrive.setTargetPosition(armLocation);

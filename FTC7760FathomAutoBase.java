@@ -32,6 +32,7 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
     @Override
     public void runOpMode() throws InterruptedException {
         setupRobot();
+        armResetMin();
 
         if (cameraName != null) {
             TSEDetector tseDetector = new TSEDetector(hardwareMap);
@@ -163,17 +164,17 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
         double timeLeft;   // For telemetry
         while (opModeIsActive() && runtime.seconds() < time) {
             if (direction) {
-                intakeDrive.setPower(0.9);
+                intakeDrive.setPower(0.7);
                 telemetry.addData("Spinning", "%f", time);
             } else {
                 intakeDrive.setPower(-1);
             }
+            intakeDrive.setPower(0.0);
             timeLeft = time - runtime.seconds();
             telemetry.addData("Intake Status", "Running for %f more seconds", timeLeft);
             telemetry.addData("Intake Status", "Total time %f seconds", time);
             telemetry.update();
         }
-        intakeDrive.setPower(0.0);
     }
 
     // Waits for the arm to get to it's desired position. Call this after asking it to go to a

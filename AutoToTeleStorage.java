@@ -12,4 +12,7 @@ public class AutoToTeleStorage {
 
     // This is the last heading from the IMU at the end of the auto opmode, in radians.
     public static double finalAutoHeading = 0.0;
+    
+    // Used to make the quack wheel spin the right direction by default. Blue is true, false is red
+    public static boolean quackDirection = true;
 }
