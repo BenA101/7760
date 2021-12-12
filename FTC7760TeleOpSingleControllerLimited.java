@@ -71,7 +71,7 @@ public class FTC7760TeleOpSingleControllerLimited extends FTC7760OpBase {
             }
             
             //Used for manual and single Quack Wheel
-            quackWheelReverse = gamepad1.right_trigger <= 0.1;
+            quackWheelReverse = mode == LinearArm;
             
             // Manual Quack Wheel input
             quackWheelManualDefault = gamepad1.x;
@@ -87,7 +87,7 @@ public class FTC7760TeleOpSingleControllerLimited extends FTC7760OpBase {
             quackWheelSingle();
 
             // Intake input & arm input
-            if (mode = LinearArm) {
+            if (mode == LinearArm) {
                 armUp = gamepad1.left_bumper;
                 armDown = gamepad1.right_bumper && !gamepad1.left_bumper;
             } else {
