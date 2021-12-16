@@ -51,5 +51,6 @@ public class FTC7760FathomAutoRedQuack extends FTC7760FathomAutoBase {
         driveForFathoms(0.0, movement_speed, -0.01, 1.0 / 3.0 * 0.8);
         rotateDegrees(90, movement_speed);
         driveForTime(-movement_speed, 0.0, 0.0, 0.5 / movement_speed);
+        armResetMin();
     }
 }

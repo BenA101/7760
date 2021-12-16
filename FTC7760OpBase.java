@@ -27,13 +27,16 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     public DcMotor rightRearDrive = null;
     public DcMotorEx duckDrive = null;
     public DcMotorEx armDrive = null;
-    public DcMotor intakeDrive = null;
+    public DcMotorEx intakeDrive = null;
     public BNO055IMU imu = null;
     public DigitalChannel armLimitSwitch;
 
     /*-----------------------------------------------
     Constants that are not modified during the match:
     -------------------------------------------------*/
+
+    // Reverse intake spin
+    public final int reverseIntakeSpeed = 800;
 
     // The fast and slow speeds of the quack wheel
     public final int quackSlowSpeed = 500;
@@ -80,6 +83,9 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     // Variable speed the arm is currently moving at
     public int armLocationDelta = armIncrement;
 
+    //Used to force quit the armResetMinTeleOp function
+    public boolean  quitArmResetMin;
+
     // True if intake is intaking
     public boolean intakePullingIn = false;
 
@@ -115,7 +121,7 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         rightRearDrive = hardwareMap.get(DcMotor.class, "rightRearDrive");
         duckDrive = hardwareMap.get(DcMotorEx.class, "Quack wheel");
         armDrive = hardwareMap.get(DcMotorEx.class, "arm");
-        intakeDrive = hardwareMap.get(DcMotor.class, "intake");
+        intakeDrive = hardwareMap.get(DcMotorEx.class, "intake");
         armLimitSwitch = hardwareMap.get(DigitalChannel.class, "armLimitSwitch");
 
         // Most robots need the motor on one side to be reversed to drive forward
@@ -129,6 +135,11 @@ public abstract class FTC7760OpBase extends LinearOpMode {
         duckDrive.setDirection(DcMotor.Direction.FORWARD);
         duckDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         duckDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        
+        intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeDrive.setDirection(DcMotor.Direction.FORWARD);
+        intakeDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         
         armDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armDrive.setTargetPositionTolerance(20);
@@ -329,9 +340,10 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     public void intake() {
         if (intakeIn || intakeOut) {
             if (intakeOut) {
-                intakeDrive.setPower(0.5);
+                intakeDrive.setPower(1.0);
+                intakeDrive.setVelocity(reverseIntakeSpeed);
             } else if (intakeIn) {
-                intakeDrive.setPower(-1);
+                intakeDrive.setPower(-1.0);
                 intakePullingIn = true;
             }
         } else {
@@ -356,9 +368,16 @@ public abstract class FTC7760OpBase extends LinearOpMode {
     }
 
     // Function which resets minimum arm position to current position
-    // TODO: Get rid of controller input in armResetMin
     public void armResetMin() {
-        while (!armLimitSwitch.getState() && !gamepad2.right_stick_button) {
+        while (!armLimitSwitch.getState()) {
+            armDrive.setTargetPosition(-7760);
+            armDrive.setPower(0.6);
+        }
+        armLimitSwitchReset();
+    }
+
+    public void armResetMinTeleOp() {
+        while (!armLimitSwitch.getState() && !quitArmResetMin) {
             armDrive.setTargetPosition(-7760);
             armDrive.setPower(0.6);
         }

@@ -8,8 +8,12 @@
             Robot centric driving is activated when a is pressed
             Field centric driving as activated when a AND start is pressed at the same time
             WIP: Field centric driving heading is reset when right joystick is pressed
-            Intakes in while left bumper is held down
-            Intakes out while left bumper is held down
+            Toggles intake in when left bumper is pressed
+            Toggles intake out when right bumper is pressed
+                Additional Note: Toggling off the current intake mode will always turn the intake completely off
+            Spins intake in while left bumper is held AND right trigger is held
+            Spins intake out while right bumper is held AND right trigger is held
+                Additional Note: Both pressing right trigger and taking your finger off right trigger will toggle off the intake
         Gamepad2:
             Quack wheel spins at default speed while x is held down
             Quack wheel spins at super speed while y is held down
@@ -37,6 +41,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp(name = "FTC7760 Dual Controller Mode", group = "Linear Opmode")
 public class FTC7760TeleOpDualControllerMode extends FTC7760OpBase {
 
+    //Used to keep the intake from repeatedly toggling on and off when the intake button is held down
+    boolean holdingIntakeIn = false;
+    boolean holdingIntakeOut = false;
+    boolean heldRightTrigger = false;
+
     @Override
     public void runOpMode() {
         setupRobot();
@@ -45,7 +54,7 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760OpBase {
         waitForStart();
         runtime.reset();
         armResetMin();
-        
+
         while (opModeIsActive()) {
 
             if (gamepad1.start) {
@@ -76,12 +85,37 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760OpBase {
             // Single duck Quack Wheel input
             quackWheelSingle = gamepad2.b;
             quackWheelSingle();
-
+            
             // Intake input
-            intakeIn = gamepad1.left_bumper;
-            intakeOut = gamepad1.right_bumper && !gamepad1.left_bumper;
+            if(gamepad1.right_trigger > 0.1) {
+                heldRightTrigger = true;
+            }
+            if(gamepad1.right_trigger <= 0.1) {
+                if (heldRightTrigger) {
+                    // Ensures the intake stops spinning when you finish holding right trigger
+                    intakeIn = false;
+                    intakeOut = false;
+                    heldRightTrigger = false;
+                }
+                if (gamepad1.left_bumper && !holdingIntakeIn) {
+                    intakeIn = !intakeIn;
+                    if (intakeIn) {
+                        intakeOut = false;
+                    }
+                } else if (gamepad1.right_bumper && !holdingIntakeOut) {
+                    intakeOut = !intakeOut;
+                    if (intakeOut) {
+                        intakeIn = false;
+                    }
+                }
+            } else {
+                intakeIn = gamepad1.left_bumper;
+                intakeOut = gamepad1.right_bumper && !gamepad1.left_bumper;
+            }
+            holdingIntakeIn = gamepad1.left_bumper;
+            holdingIntakeOut = gamepad1.right_bumper;
             intake();
-
+            
             // Arm presets input
             if (gamepad2.dpad_up) {
                 armPresetHigh();
@@ -102,6 +136,8 @@ public class FTC7760TeleOpDualControllerMode extends FTC7760OpBase {
             armDown = gamepad2.right_bumper && !gamepad2.left_bumper;
             armManual();
 
+            // Quit armResetMin input
+            quitArmResetMin = gamepad2.right_stick_button;
             // Arm Reset Input
             if (gamepad2.left_stick_button) {
                 armResetMin();

@@ -164,7 +164,8 @@ public abstract class FTC7760FathomAutoBase extends FTC7760OpBase {
         double timeLeft;   // For telemetry
         while (opModeIsActive() && runtime.seconds() < time) {
             if (direction) {
-                intakeDrive.setPower(0.7);
+                intakeDrive.setPower(1.0);
+                intakeDrive.setVelocity(reverseIntakeSpeed);
                 telemetry.addData("Spinning", "%f", time);
             } else {
                 intakeDrive.setPower(-1);

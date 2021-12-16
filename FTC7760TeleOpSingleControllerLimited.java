@@ -17,8 +17,9 @@
             Arm is set to straight up when dpad left is pressed
 
         Default Only:
-            Intakes in while left bumper is held down
-            Intakes out while left bumper is held down
+            Toggles intake in when left bumper is pressed
+            Toggles intake out when right bumper is pressed
+                Additional Note: Toggling off the current mode will always turn the intake completely off
             Arm is set to drive height when left trigger is pressed
                 Additional Note: See "Presets Note"
 
@@ -38,9 +39,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "FTC7760 Single Controller Limited Mode", group = "Linear Opmode")
 public class FTC7760TeleOpSingleControllerLimited extends FTC7760OpBase {
-
+    
+    //Used to control toggling intake
+    boolean holdingIntakeIn = false;
+    boolean holdingIntakeOut = false;
+    
     @Override
-    enum modes { Default, LinearArm }
     public void runOpMode() {
         setupRobot();
 
@@ -50,11 +54,11 @@ public class FTC7760TeleOpSingleControllerLimited extends FTC7760OpBase {
         armResetMin();
         
         while (opModeIsActive()) {
-
+            
             // Changing the mode changes how some controls work
-            modes mode = Default;
-            if (gamepad1.right_trigger) {
-                mode = LinearArm;
+            int mode = 0;
+            if (gamepad1.right_trigger >= 0.1) {
+                mode = 1;
             }
 
             if (gamepad1.start) {
@@ -71,7 +75,7 @@ public class FTC7760TeleOpSingleControllerLimited extends FTC7760OpBase {
             }
             
             //Used for manual and single Quack Wheel
-            quackWheelReverse = mode == LinearArm;
+            quackWheelReverse = mode == 1;
             
             // Manual Quack Wheel input
             quackWheelManualDefault = gamepad1.x;
@@ -87,13 +91,24 @@ public class FTC7760TeleOpSingleControllerLimited extends FTC7760OpBase {
             quackWheelSingle();
 
             // Intake input & arm input
-            if (mode == LinearArm) {
+            if (mode == 1) {
                 armUp = gamepad1.left_bumper;
                 armDown = gamepad1.right_bumper && !gamepad1.left_bumper;
             } else {
-                intakeIn = gamepad1.left_bumper;
-                intakeOut = gamepad1.right_bumper && !gamepad1.left_bumper;
+                if (gamepad1.left_bumper && !holdingIntakeIn) {
+                    intakeIn = !intakeIn;
+                    if (intakeIn) {
+                        intakeOut = false;
+                    }
+                } else if (gamepad1.right_bumper && !holdingIntakeOut) {
+                    intakeOut = !intakeOut;
+                    if (intakeOut) {
+                        intakeIn = false;
+                    }
+                }
             }
+            holdingIntakeIn = gamepad1.left_bumper;
+            holdingIntakeOut = gamepad1.right_bumper;
             intake();
             armManual();
 

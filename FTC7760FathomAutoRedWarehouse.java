@@ -41,7 +41,6 @@ public class FTC7760FathomAutoRedWarehouse extends FTC7760FathomAutoBase {
         // Park
         driveForTime(0.0, movement_speed, -0.02, 1.25 / movement_speed);
         driveForFathoms(movement_speed, 0.0, 0.0, 1.0 / 3.0 * 1.25);
-        armPresetDrive();
-        waitForArm();
+        armResetMin();
     }
 }
